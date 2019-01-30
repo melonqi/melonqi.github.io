@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>geojson | Melonqi Blog</title>
+  <title>float有效位丢失 | Melonqi Blog</title>
   
   
 
@@ -147,13 +147,13 @@
   <div class="meta" id="header-meta">
     
       
-          <h1 class="title">geojson</h1>
+          <h1 class="title">float有效位丢失</h1>
       
     
 
     
       <time class="metatag time">
-        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-01-27
+        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-01-30
       </time>
     
 
@@ -177,27 +177,69 @@
 
     <section class="article typo">
       <div class="article-entry" itemprop="articleBody">
-        <p><em>Geographic JSON</em> 简称GeoJson，是一种使用json格式的地理信息数据结构。</p>
+        <p>最近项目过程中，为了节省存储空间，使用float而不是double来存储浮点数，结果遇到了float溢出的问题。当时还觉得奇怪，float表示范围挺大的啊，有没有超范围，怎么还会溢出？后来试验并查证了float的存储结构，有了答案，原来是float的有效位丢失了。</p>
 <a id="more"></a>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"type"</span>: <span class="string">"Feature"</span>,</span><br><span class="line">  <span class="attr">"geometry"</span>: &#123;</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"Point"</span>,</span><br><span class="line">    <span class="attr">"coordinates"</span>: [<span class="number">125.6</span>, <span class="number">10.1</span>]</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"properties"</span>: &#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"Dinagat Islands"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>GeoJson支持的地理信息格式有<code>Point</code>, <code>LineString</code>, <code>Polygon</code>, <code>MultiPoint</code>, <code>MultiLineString</code>, and <code>MultiPolygon</code>。</p>
-<p>有额外属性的地理信息主体(Geometric objects)称为Feature，Feature集合称为FeatureCollection。</p>
-<p>上述例子中，为Point Feature，经纬度坐标为125.6,10.1，有一个name属性，该Point的name为”Dinagat Islands”。</p>
-<p>A GeoJSON FeatureCollection:</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">   &#123;</span><br><span class="line">	<span class="attr">"type"</span>: <span class="string">"FeatureCollection"</span>,</span><br><span class="line">	<span class="attr">"features"</span>: [&#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"Feature"</span>,</span><br><span class="line">		<span class="attr">"geometry"</span>: &#123;</span><br><span class="line">			<span class="attr">"type"</span>: <span class="string">"Point"</span>,</span><br><span class="line">			<span class="attr">"coordinates"</span>: [<span class="number">102.0</span>, <span class="number">0.5</span>]</span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="attr">"properties"</span>: &#123;</span><br><span class="line">			<span class="attr">"prop0"</span>: <span class="string">"value0"</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"Feature"</span>,</span><br><span class="line">		<span class="attr">"geometry"</span>: &#123;</span><br><span class="line">			<span class="attr">"type"</span>: <span class="string">"LineString"</span>,</span><br><span class="line">			<span class="attr">"coordinates"</span>: [</span><br><span class="line">				[<span class="number">102.0</span>, <span class="number">0.0</span>],</span><br><span class="line">				[<span class="number">103.0</span>, <span class="number">1.0</span>],</span><br><span class="line">				[<span class="number">104.0</span>, <span class="number">0.0</span>],</span><br><span class="line">				[<span class="number">105.0</span>, <span class="number">1.0</span>]</span><br><span class="line">			]</span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="attr">"properties"</span>: &#123;</span><br><span class="line">			<span class="attr">"prop0"</span>: <span class="string">"value0"</span>,</span><br><span class="line">			<span class="attr">"prop1"</span>: <span class="number">0.0</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;, &#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"Feature"</span>,</span><br><span class="line">		<span class="attr">"geometry"</span>: &#123;</span><br><span class="line">			<span class="attr">"type"</span>: <span class="string">"Polygon"</span>,</span><br><span class="line">			<span class="attr">"coordinates"</span>: [</span><br><span class="line">				[</span><br><span class="line">					[<span class="number">100.0</span>, <span class="number">0.0</span>],</span><br><span class="line">					[<span class="number">101.0</span>, <span class="number">0.0</span>],</span><br><span class="line">					[<span class="number">101.0</span>, <span class="number">1.0</span>],</span><br><span class="line">					[<span class="number">100.0</span>, <span class="number">1.0</span>],</span><br><span class="line">					[<span class="number">100.0</span>, <span class="number">0.0</span>]</span><br><span class="line">				]</span><br><span class="line">			]</span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="attr">"properties"</span>: &#123;</span><br><span class="line">			<span class="attr">"prop0"</span>: <span class="string">"value0"</span>,</span><br><span class="line">			<span class="attr">"prop1"</span>: &#123;</span><br><span class="line">				<span class="attr">"this"</span>: <span class="string">"that"</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>更多详细的信息可以参考<a href="https://tools.ietf.org/html/rfc7946" target="_blank" rel="noopener">The GeoJSON Specification (RFC 7946)</a></p>
+<p>先来看试验bug复盘</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> f1 = <span class="number">220000000</span>, f2 = <span class="number">8.0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f + %f = %f\n"</span>, f1, f2, f1 + f2);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本来预期程序会输出<code>200000000.0+8.0=200000008.0</code>, 结果大相径庭。</p>
+<p>程序输出</p>
+<blockquote>
+<p>220000000.000000 + 8.000000 = 220000000.000000</p>
+</blockquote>
+<p>结果说明，加不加8.0的结果不变，这种隐藏的bug真的是难以排除。查阅了相关资料之后原来是自己才疏学浅。</p>
+<h2 id="float的存储结构"><a href="#float的存储结构" class="headerlink" title="float的存储结构"></a>float的存储结构</h2><p>任何数据在内存中都是以二进制的形式存储的, 包括float。 浮点数在二进制科学表示法中的表示为<code>S=M*2^N</code>, 由三部分组成，符号位+阶码(N)+尾数(M)。float 二进制32位，其中符号位1位，阶码8位，尾数23位。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>31</th>
+<th>30-23</th>
+<th>22-0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>float</td>
+<td>符号位</td>
+<td>阶码</td>
+<td>尾数</td>
+</tr>
+</tbody>
+</table>
+<p>符号位，0表示正，1表示负</p>
+<p>阶码：8位阶码N=[-127,127], 因为指数可正可负，所以指数部分的存储采用移位存储，存储的数据为元数据+127</p>
+<p>尾数：有效数字位，即部分二进制位(小数点后面的二进制位)，因为规定M的整数部分恒为1，所以这个1就不进行存储了，即<code>S=1.xxx*2^N</code></p>
+<p>举例：</p>
+<p>125.5的float标准浮点格式，用二进制表示为<code>1111101.1=1.1111011*2^6</code>, 则阶码为6，加上127为133，则表示为10000101，而对于尾数将整数部分1去掉，为1111011，在其后面补0使其位数达到23位，则为11110110000000000000000</p>
+<p>所以125.5的float存储二进制为0 10000101 11110110000000000000000</p>
+<p>反过来若要根据二进制形式求算浮点数如0 10000101 11110110000000000000000</p>
+<p>由于符号为为0，则为正数。阶码为133-127=6，尾数为11110110000000000000000，则其真实尾数为1.1111011。所以其大小为<code>1.1111011*2^6</code>，将小数点右移6位，得到1111101.1，而1111101的十进制为125，0.1的十进制为<code>1*2^(-1)=0.5</code>，所以其大小为125.5</p>
+<p>由上分析可知float型数据最大表示范围为<code>1.11111111111111111111111*2^127=3.4*10^38</code></p>
+<h2 id="float有效位丢失"><a href="#float有效位丢失" class="headerlink" title="float有效位丢失"></a>float有效位丢失</h2><p>因为尾数为23+1=24位，如果数据尾数多于24位，就会造成精度丢失。</p>
+<p>以220000000.0为例， <code>220000000.0=1101 0001 1100 1110 1111 0000 0000.0=1.101 0001 1100 1110 1111*2^27</code></p>
+<p>其中阶码为27，移位码为27+127=154=10011010 ，尾数为101 0001 1100 1110 1111，该数字的二进制表示为 0 10011010 10100011100111011110000</p>
+<p>同理 220000000.0+8.0=220000008.0 的阶码的移位码为10011010，尾数为101 0001 1100 1110 1111 0000 1000，由于尾数为27位，有效位只有前23位，所以有效尾数为101 0001 1100 1110 1111 0000 </p>
+<p>所以220000008.0的二进制编码为0 10011010 10100011100111011110000， 跟220000000.0 是一样的，符合结果预期。</p>
+<p>再做一个实验证实一下，220000000.0+16.0=2200000016.0 在float下应该是正确的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> f1 = <span class="number">220000000</span>, f2 = <span class="number">16.0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%f + %f = %f\n"</span>, f1, f2, f1 + f2);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果符合预期</p>
+<blockquote>
+<p>220000000.000000 + 16.000000 = 200000016.000000</p>
+</blockquote>
+<p>具体原因可以自己推导一下</p>
+<p>PS: float会有精度损失问题，比如本来存的<code>float f1=220000008</code>，实际真实值为220000000</p>
 
       </div>
         
           <section class="meta" id="footer-meta">
             
-              <time class="metatag time" itemprop="dateUpdated" datetime="2019-01-27T21:04:25+08:00" content="2019-01-27"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
-                &nbsp;2019-01-27
+              <time class="metatag time" itemprop="dateUpdated" datetime="2019-01-30T10:19:05+08:00" content="2019-01-30"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+                &nbsp;2019-01-30
               </time>
             
             
                 
-                <div class="metatag tags"><a class="tag" href="/tags/Gis/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;Gis</a></div>
+                <div class="metatag tags"><a class="tag" href="/tags/C-C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;C/C++</a></div>
             
             
           </section>
@@ -206,40 +248,21 @@
         
             <div class="prev-next">
                 
-                    <section class="prev">
-                        <span class="art-item-left">
-                            <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;上一页</h6>
-                            <h4>
-                                <a href="/2019/01/30/float/" rel="prev" title="float有效位丢失">
-                                  
-                                      float有效位丢失
-                                  
-                                </a>
-                            </h4>
-                            
-                                
-                                <h6 class="tags">
-                                    <a class="tag" href="/tags/C-C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>C/C++</a>
-                                </h6>
-                            
-                        </span>
-                    </section>
-                
                 
                     <section class="next">
                         <span class="art-item-right" aria-hidden="true">
                             <h6>下一页&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
                             <h4>
-                                <a href="/2019/01/24/textencode/" rel="prev" title="文本编码那些事">
+                                <a href="/2019/01/27/geojson/" rel="prev" title="geojson">
                                     
-                                        文本编码那些事
+                                        geojson
                                     
                                 </a>
                             </h4>
                             
                                 
                                 <h6 class="tags">
-                                    <a class="tag" href="/tags/编码/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>编码</a>
+                                    <a class="tag" href="/tags/Gis/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>Gis</a>
                                 </h6>
                             
                         </span>
@@ -271,7 +294,7 @@
         <h4><i class="fas fa-bookmark fa-fw" aria-hidden="true"></i>&nbsp;相关文章</h4>
         <ul>
             
-                <li><a href="http://melonqi.github.io/2019/01/30/float/">float有效位丢失</a></li>
+                <li><a href="http://melonqi.github.io/2019/01/27/geojson/">geojson</a></li>
             
                 <li><a href="http://melonqi.github.io/2019/01/24/textencode/">文本编码那些事</a></li>
             
@@ -291,7 +314,7 @@
 
 <script>
     window.subData = {
-        title: 'geojson',
+        title: 'float有效位丢失',
         tools: true
     }
 </script>
@@ -374,6 +397,20 @@
       
       
         
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目录</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#float的存储结构"><span class="toc-text">float的存储结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#float有效位丢失"><span class="toc-text">float有效位丢失</span></a></li></ol>
+    </div>
+  </section>
+
 
       
     
