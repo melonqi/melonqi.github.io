@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>TopK和堆排序 | Melonqi Blog</title>
+  
+  
+
+  <link rel="alternate" href="/atom.xml" title="Melonqi Blog">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+  <!-- link -->
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
+
+  
+
+  
+  <link rel="stylesheet" href="/style.css">
+  
+
+  
+
+
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar" class="pure"></div>
+</div>
+
+    <script>setLoadingBarProgress(20)</script>
+    <header class="l_header pure">
+	<div class="wrapper">
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href="/">
+        
+          Melonqi Blog
+        
+      </a>
+			<div class="menu">
+				<ul class="h-list">
+          
+  					
+  						<li>
+								<a id="https:melonqi.github.io" class="nav flat-box" href="https://melonqi.github.io">
+									<i class="fas fa-home fa-fw"></i>&nbsp;Home
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="home" class="nav flat-box" href="/">
+									<i class="fas fa-rss fa-fw"></i>&nbsp;Blogs
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="archives" class="nav flat-box" href="/archives/">
+									<i class="fas fa-archive fa-fw"></i>&nbsp;Archives
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="Search">
+						<span class="icon"><i class="fas fa-search fa-fw"></i></span>
+					</form>
+				</div>
+			
+			<ul class="switcher h-list">
+				
+					<li class="s-search"><a class="fas fa-search fa-fw" href="javascript:void(0)"></a></li>
+				
+				<li class="s-menu"><a class="fas fa-bars fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+
+		<div class="nav-sub container container--flex">
+			<a class="logo flat-box"></a>
+			<ul class="switcher h-list">
+				<li class="s-comment"><a class="flat-btn fas fa-comments fa-fw" href="javascript:void(0)"></a></li>
+				<li class="s-toc"><a class="flat-btn fas fa-list fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu">
+      <ul>
+          
+              
+                  <li>
+										<a id="https:melonqi.github.io" class="nav flat-box" href="https://melonqi.github.io">
+											<i class="fas fa-home fa-fw"></i>&nbsp;Home
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="home" class="nav flat-box" href="/">
+											<i class="fas fa-rss fa-fw"></i>&nbsp;Blogs
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="archives" class="nav flat-box" href="/archives/">
+											<i class="fas fa-archive fa-fw"></i>&nbsp;Archives
+										</a>
+                  </li>
+              
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+
+    <script>setLoadingBarProgress(40);</script>
+    <div class="l_body">
+    <div class='container clearfix'>
+        <div class='l_main'>
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
+<section class="meta">
+  
+  <div class="meta" id="header-meta">
+    
+      
+          <h1 class="title">TopK和堆排序</h1>
+      
+    
+
+    
+      <time class="metatag time">
+        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-02-08
+      </time>
+    
+
+    
+      
+
+    
+
+    
+      
+        <div class="metatag browse busuanzi"><i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+          &nbsp;<span id="busuanzi_value_page_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+        </div>
+      
+    
+
+    
+
+  </div>
+</section>
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <p>在处理海量数据或者数据流里经常会碰到提取前K个最大值，前K个最小值的问题；面试的时候也特别喜欢问此种问题。</p>
+<p>本文先介绍了大顶堆和小顶堆，然后给出利用大顶堆和小顶堆算法解决TopK问题，最后给出了堆排序。</p>
+<p>所有代码位于<a href="https://github.com/melonqi/TopK" target="_blank" rel="noopener">TopK</a></p>
+<a id="more"></a>
+<h2 id="大顶堆和小顶堆"><a href="#大顶堆和小顶堆" class="headerlink" title="大顶堆和小顶堆"></a>大顶堆和小顶堆</h2><p>大顶堆和小顶堆都是完全二叉树，由于可以使用数组nums表示完全二叉树，所以存储结构用数组很方便。</p>
+<p>父节点索引为<code>i</code>，则左孩子节点索引为<code>2*i+1</code>，右孩子节点索引为<code>2*i+2</code></p>
+<p><img src="full-binary-tree.png" alt=""></p>
+<p>根节点索引为0，索引为1的节点为根节点的左孩子，索引为2的节点为根节点的右孩子。</p>
+<p>即值为9节点的左孩子值为8，右孩子值为7。</p>
+<h3 id="大顶堆-Max-Heap"><a href="#大顶堆-Max-Heap" class="headerlink" title="大顶堆(Max-Heap)"></a>大顶堆(Max-Heap)</h3><p>每个结点的值都大于或等于其左右孩子结点的值，即<code>nums[i]&gt;=nums[2*i+1] &amp;&amp; nums[i]&gt;=nums[2*i+2]</code>。</p>
+<p><img src="max-heap.png" alt=""></p>
+<p>可以看到堆顶即根节点的值最大；</p>
+<p>大顶堆可以用来找前K个最小值。</p>
+<p>假设堆里面应该有K个值，其中根节点值最大，此时新来一个值。</p>
+<ol>
+<li>如果比根节点大，则说明比堆里面其他节点都大，肯定不在前K个最小值里面；</li>
+<li>如果比根节点小，则弹出最大的值，放入该值，即用该值替换根节点，然后重新调整形成大顶堆，用于下一次值调整。</li>
+</ol>
+<p>同时大顶堆可用于升序堆排序，将大顶堆的根节点值与最后一个节点值交换，剩余的元素在构建大顶堆，依次构建形成升序。具体可以看后面的堆排序。</p>
+<h3 id="小顶堆-Min-Heap"><a href="#小顶堆-Min-Heap" class="headerlink" title="小顶堆(Min-Heap)"></a>小顶堆(Min-Heap)</h3><p>每个结点的值都大于或等于其左右孩子结点的值，即<code>nums[i]&lt;=nums[2*i+1] &amp;&amp; nums[i]&lt;=nums[2*i+2]</code>。</p>
+<p><img src="min-heap.png" alt=""></p>
+<p>同大顶堆，小顶堆用来找前K个最大值，用于堆排序的降序。</p>
+<h2 id="堆化，以大顶堆为例"><a href="#堆化，以大顶堆为例" class="headerlink" title="堆化，以大顶堆为例"></a>堆化，以大顶堆为例</h2><p>假设树为</p>
+<p><img src="init.png" alt=""></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> <span class="built_in">array</span>[] = &#123;<span class="number">4</span>, <span class="number">9</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">8</span>&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nums(<span class="built_in">array</span>, <span class="built_in">array</span> + <span class="keyword">sizeof</span>(<span class="built_in">array</span>)/<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line"><span class="comment">//对nums进行堆化，形成大顶堆</span></span><br><span class="line">heapify(nums);</span><br><span class="line"><span class="comment">//输出堆化之后的</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; nums.size(); i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; nums[i] &lt;&lt; <span class="string">"\t"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<blockquote>
+<p>9    7    8    4    6    5</p>
+</blockquote>
+<p>对应的完全二叉树为</p>
+<p><img src="finial.png" alt=""></p>
+<p>大顶堆的每一棵子树都是大顶堆，适用于递归算法；算法heapify的核心思想，从底向上，使得每棵树包括子树都变成大顶堆；类似于冒泡排序，从父节点和左右孩子节点选择最大的值作为父节点的值，由于是从底向上，能够保证根节点是最大值；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heapify</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;nums)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> array_size = nums.size();</span><br><span class="line">    <span class="comment">//(array_size-1)/2第一个非叶子节点</span></span><br><span class="line">    <span class="comment">//自底向上遍历所有的非叶子节点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (array_size - <span class="number">1</span>) / <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">    &#123;</span><br><span class="line">        build_heap(nums, i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>算法build_heap会从父节点i开始构建大顶堆，由于是自底向上构建的，父节点i的左右孩子节点都已经是大顶堆了。如果父节点的值比左右孩子节点的值都大，则不用调整该树已经是大顶堆了；否则，交换父节点和左右孩子值最大的节点，由于有可能使孩子变成的非大顶堆，就需要在调用build_heap调整一下该孩子节点再次成为大顶堆。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build_heap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;nums, <span class="keyword">int</span> parent)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">2</span> * parent + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> right = <span class="number">2</span> * parent + <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> largest = parent;</span><br><span class="line">    <span class="keyword">int</span> array_size = nums.size();</span><br><span class="line">    <span class="comment">//max-heap</span></span><br><span class="line">    <span class="keyword">if</span> (left &lt; array_size &amp;&amp; nums[left] &gt; nums[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = left;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (right &lt; array_size &amp;&amp; nums[right] &gt; nums[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (largest != parent)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::swap(nums[largest], nums[parent]);</span><br><span class="line">        <span class="comment">//swap之后孩子节点可能不是大顶堆了，需要调整一下</span></span><br><span class="line">        build_heap(nums, largest);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对树[9, 4, 5, 7, 6, 8]进行调整，非叶子节点的索引为[2,1,0]</p>
+<ol>
+<li><p>调整非叶子节点2，的节点2值为5，只有左孩子节点值为8；交换5，8，由于左孩子节点无孩子节点，不需要继续调整。</p>
+<p><img src="step1.png" alt=""></p>
+</li>
+<li><p>调整非叶子节点1，由于9&gt;7&amp;&amp;9&gt;6，所以该树不用调整</p>
+<p><img src="step2.png" alt=""></p>
+</li>
+<li><p>调整节点0，由于左孩子值最大，交换节点0，节点1的值</p>
+<p><img src="step3.1.png" alt=""></p>
+<p>由于节点1不再是满足大顶堆的性质，需要调整成为大顶堆</p>
+<p><img src="step3.2.png" alt=""></p>
+<p>调整之后的大顶堆为[9,7,8,4,6,5]</p>
+</li>
+</ol>
+<p>整体代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build_heap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;nums, <span class="keyword">int</span> parent)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">2</span> * parent + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> right = <span class="number">2</span> * parent + <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> largest = parent;</span><br><span class="line">    <span class="keyword">int</span> array_size = nums.size();</span><br><span class="line">    <span class="comment">//max-heap</span></span><br><span class="line">    <span class="keyword">if</span> (left &lt; array_size &amp;&amp; nums[left] &gt; nums[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = left;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (right &lt; array_size &amp;&amp; nums[right] &gt; nums[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (largest != parent)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::swap(nums[largest], nums[parent]);</span><br><span class="line">        build_heap(nums, largest);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heapify</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;nums)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> array_size = nums.size();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (array_size - <span class="number">1</span>) / <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">    &#123;</span><br><span class="line">        build_heap(nums, i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">array</span>[] = &#123;<span class="number">9</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">8</span>&#125;;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nums(<span class="built_in">array</span>, <span class="built_in">array</span> + <span class="keyword">sizeof</span>(<span class="built_in">array</span>)/<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    heapify(nums);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; nums.size(); i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; nums[i] &lt;&lt; <span class="string">"\t"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="TopK"><a href="#TopK" class="headerlink" title="TopK"></a>TopK</h2><p>有了上面的heapify构建TopK就容易多了。</p>
+<p>以查找前K个最小值为例，使用大顶堆。固定堆大小为K，遍历所有元素。</p>
+<p>如果堆大小小于K，添加元素到堆中，然后堆化，其中根节点是最大值；</p>
+<p>如果堆大小为K，比较根节点与元素的大小。</p>
+<ol>
+<li>如果比根节点大，则比堆中其他K-1个元素都大，所以不会出现前K个最小值中；</li>
+<li>如果比跟节点小，用该元素替换堆中最大值，即根节点，然后调整根节点为大顶堆(孩子节点已经是大顶堆了)。</li>
+</ol>
+<p>具体代码如下，</p>
+<ol>
+<li>指定compare函数可以支持大顶堆或者小顶堆</li>
+<li>push函数先TopK中添加元素</li>
+<li>get函数获取前K个元素；</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> TOPK_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TOPK_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TopK</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">	TopK(<span class="keyword">int</span> k, <span class="keyword">bool</span> (*compare_func)(<span class="keyword">const</span> T &amp;t1, <span class="keyword">const</span> T &amp;t2)) &#123;</span><br><span class="line">		k_ = k;</span><br><span class="line">		compare_ = compare_func;</span><br><span class="line">		array_.reserve(k_);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">push</span><span class="params">(<span class="keyword">const</span> T &amp;value)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">heapify</span><span class="params">(<span class="keyword">int</span> array_size)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; get() &#123;</span><br><span class="line">		<span class="keyword">return</span> array_;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">build_heap</span><span class="params">(<span class="keyword">int</span> array_size, <span class="keyword">int</span> root)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> k_;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; array_;</span><br><span class="line">	<span class="keyword">bool</span> (*compare_)(<span class="keyword">const</span> T &amp;t1, <span class="keyword">const</span> T &amp;t2);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">void</span> TopK&lt;T&gt;::heapify(<span class="keyword">int</span> array_size) &#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = (array_size - <span class="number">1</span>) / <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">		build_heap(array_size, i);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">bool</span> TopK&lt;T&gt;::push(<span class="keyword">const</span> T &amp;value) &#123;</span><br><span class="line">	<span class="keyword">if</span> (array_.size() &lt; k_) &#123;</span><br><span class="line">		<span class="comment">//array has less than k_ elements</span></span><br><span class="line">		array_.push_back(value);</span><br><span class="line">		heapify(array_.size());</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//array has k_ elements</span></span><br><span class="line">	<span class="comment">//user define compare func</span></span><br><span class="line">	<span class="keyword">if</span> (compare_ == <span class="literal">NULL</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	<span class="comment">//if heap is min-heap, compare is greater func</span></span><br><span class="line">	<span class="comment">//if heap is max-heap, compare is less func</span></span><br><span class="line">	<span class="keyword">if</span> (compare_(array_[<span class="number">0</span>], value)) &#123;</span><br><span class="line">		<span class="comment">//the value need to insert heap</span></span><br><span class="line">		array_[<span class="number">0</span>] = value;</span><br><span class="line">        <span class="comment">//0 for root</span></span><br><span class="line">		build_heap(k_,<span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">void</span> TopK&lt;T&gt;::build_heap(<span class="keyword">int</span> array_size, <span class="keyword">int</span> root) &#123;</span><br><span class="line">	<span class="keyword">int</span> left = <span class="number">2</span> * root + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">int</span> right = <span class="number">2</span> * root + <span class="number">2</span>;</span><br><span class="line">	<span class="keyword">int</span> largest = root;</span><br><span class="line">	<span class="keyword">if</span> (left &lt; array_size &amp;&amp; compare_(array_[left], array_[largest])) &#123;</span><br><span class="line">		largest = left;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (right &lt; array_size &amp;&amp; compare_(array_[right], array_[largest])) &#123;</span><br><span class="line">		largest = right;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (largest != root) &#123;</span><br><span class="line">		<span class="built_in">std</span>::swap(array_[largest], array_[root]);</span><br><span class="line">		build_heap(array_size, largest);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">//TOPK_H</span></span></span><br></pre></td></tr></table></figure>
+<p>测试代码，使用小顶堆找出[4, 5, 1, 9, 8, 0, 3, 2]中Top3最大值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"TopK.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//max-heap</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">max_heap_compare</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp;t1, <span class="keyword">const</span> <span class="keyword">int</span> &amp;t2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t1 &gt; t2;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//min-heap</span></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">min_heap_compare</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp;t1, <span class="keyword">const</span> <span class="keyword">int</span> &amp;t2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t1 &lt; t2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">array</span>[] = &#123;<span class="number">4</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">9</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">2</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span> array_len = <span class="keyword">sizeof</span>(<span class="built_in">array</span>) / <span class="keyword">sizeof</span>(<span class="built_in">array</span>[<span class="number">0</span>]);</span><br><span class="line">    TopK&lt;<span class="keyword">int</span>&gt; top_k(<span class="number">3</span>, min_heap_compare);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; array_len; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        top_k.push(<span class="built_in">array</span>[i]);</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result = top_k.get();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; result.size(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; result[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序输出</p>
+<blockquote>
+<p>4<br>4 5<br>1 5 4<br>4 5 9<br>5 8 9<br>5 8 9<br>5 8 9<br>5 8 9</p>
+</blockquote>
+<h2 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h2><p>堆排序是一种<strong>选择排序</strong>，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序</p>
+<p>以升序为例，构建大顶堆。要排序的数组array大小为n</p>
+<ol>
+<li>利用build_heap算法，对array[0,…,n-1]进行堆化，需要自底向上调整所有非叶子节点，使整棵树变成大顶堆，其中根节点为数组最大值，交换array[0]和array[n-1]</li>
+<li>对array[o,…,n-2]进行堆化，这里只需要对堆化根节点，根节点为最大值，交换array[0]和array[n-2]</li>
+<li>依次循环步骤2之至堆中只有一个元素，此时数据已经排好序</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build_heap</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> array_len, <span class="keyword">int</span> root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> left = root * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> right = root * <span class="number">2</span> + <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> largest = root;</span><br><span class="line">    <span class="keyword">if</span> (left &lt; array_len &amp;&amp; <span class="built_in">array</span>[left] &gt; <span class="built_in">array</span>[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = left;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (right &lt; array_len &amp;&amp; <span class="built_in">array</span>[right] &gt; <span class="built_in">array</span>[largest])</span><br><span class="line">    &#123;</span><br><span class="line">        largest = right;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (largest != root)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::swap(<span class="built_in">array</span>[largest], <span class="built_in">array</span>[root]);</span><br><span class="line">        build_heap(<span class="built_in">array</span>, array_len, largest);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heap_sort</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> array_len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//first build heap make sure the tree is a heap</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (array_len - <span class="number">1</span>) / <span class="number">2</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">    &#123;</span><br><span class="line">        build_heap(<span class="built_in">array</span>, array_len, i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = array_len - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//put the max value to the last index</span></span><br><span class="line">        <span class="built_in">std</span>::swap(<span class="built_in">array</span>[<span class="number">0</span>], <span class="built_in">array</span>[i]);</span><br><span class="line">        build_heap(<span class="built_in">array</span>, i, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_array</span><span class="params">(<span class="keyword">int</span> <span class="built_in">array</span>[], <span class="keyword">int</span> array_len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; array_len; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">array</span>[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">array</span>[] = &#123;<span class="number">6</span>, <span class="number">9</span>, <span class="number">8</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span> array_len = <span class="keyword">sizeof</span>(<span class="built_in">array</span>) / <span class="keyword">sizeof</span>(<span class="built_in">array</span>[<span class="number">0</span>]);</span><br><span class="line">    heap_sort(<span class="built_in">array</span>, array_len);</span><br><span class="line">    print_array(<span class="built_in">array</span>, array_len);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序输出结果</p>
+<blockquote>
+<p>1 2 3 4 5 6 7 8 9</p>
+</blockquote>
+
+      </div>
+        
+          <section class="meta" id="footer-meta">
+            
+              <time class="metatag time" itemprop="dateUpdated" datetime="2019-02-09T17:24:06+08:00" content="2019-02-09"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+                &nbsp;2019-02-09
+              </time>
+            
+            
+                
+                <div class="metatag tags"><a class="tag" href="/tags/算法/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;算法</a></div>
+            
+            
+          </section>
+        
+
+        
+            <div class="prev-next">
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>Next&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/2019/01/30/float/" rel="prev" title="float有效位丢失">
+                                    
+                                        float有效位丢失
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/C-C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>C/C++</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+
+    </section>
+
+</article>
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+
+      
+        
+
+    <div class="recommended_posts">
+        <h4><i class="fas fa-bookmark fa-fw" aria-hidden="true"></i>&nbsp;Related Posts</h4>
+        <ul>
+            
+                <li><a href="http://melonqi.github.io/2019/01/30/float/">float有效位丢失</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/27/geojson/">geojson</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/24/textencode/">文本编码那些事</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/13/struct/">struct库的使用</a></li>
+            
+        </ul>
+    </div>
+
+
+      
+
+      
+    </section>
+  </article>
+
+
+
+<script>
+    window.subData = {
+        title: 'TopK和堆排序',
+        tools: true
+    }
+</script>
+
+
+        </div>
+        <aside class='l_side'>
+            
+  
+  
+    
+      
+      
+        <section class="author">
+  <div class="content pure">
+    
+      <div class="avatar">
+        <img class="avatar" src="http://hbimg.b0.upaiyun.com/bd522da06a3fcdf07f00745b37eb64c202f9da5d16ee4-9rfq5f_fw658">
+      </div>
+    
+    
+    
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        <section class="plain">
+  
+<header class="pure">
+  <div><i class="fas fa-bullhorn fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;注意啦～</div>
+  
+    <a class="rightBtn" target="_blank" rel="external nofollow noopener noreferrer" href="https://xaoxuu.com/wiki/material-x/" title="https://xaoxuu.com/wiki/material-x/">
+    <i class="fas fa-question-circle fa-fw"></i></a>
+  
+</header>
+
+  <div class="content pure">
+    <p>本站使用 <a href="https://xaoxuu.com/wiki/material-x/">Material X</a> 作为主题，喜欢这个主题的朋友可以阅读文档进行安装哦，超喜欢的话还可以安利给身边的朋友哦～</p>
+
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="tagcloud">
+    
+<header class="pure">
+  <div><i class="fas fa-fire fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;Hot Tags</div>
+  
+</header>
+
+    <div class="content pure">
+      <a href="/tags/C-C/" style="font-size: 14px; color: #999">C/C++</a> <a href="/tags/Gis/" style="font-size: 14px; color: #999">Gis</a> <a href="/tags/python/" style="font-size: 14px; color: #999">python</a> <a href="/tags/算法/" style="font-size: 14px; color: #999">算法</a> <a href="/tags/编码/" style="font-size: 14px; color: #999">编码</a>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;Table of Contents</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#大顶堆和小顶堆"><span class="toc-text">大顶堆和小顶堆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#大顶堆-Max-Heap"><span class="toc-text">大顶堆(Max-Heap)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小顶堆-Min-Heap"><span class="toc-text">小顶堆(Min-Heap)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆化，以大顶堆为例"><span class="toc-text">堆化，以大顶堆为例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TopK"><span class="toc-text">TopK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆排序"><span class="toc-text">堆排序</span></a></li></ol>
+    </div>
+  </section>
+
+
+      
+    
+  
+
+
+        </aside>
+        <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+    <footer id="footer" class="clearfix">
+  
+  <br>
+  <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+  <div>Use <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a> as theme, total visits <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span> times. 
+  </div>
+</footer>
+
+    <script>setLoadingBarProgress(80);</script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        const $reveal = $('.reveal');
+    		if ($reveal.length === 0) return;
+    		const sr = ScrollReveal({ distance: 0 });
+    		sr.reveal('.reveal');
+      });
+    </script>
+  
+  
+    <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        Waves.attach('.flat-btn', ['waves-button']);
+        Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+        Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+        Waves.attach('.flat-box', ['waves-block']);
+        Waves.attach('.float-box', ['waves-block', 'waves-float']);
+        Waves.attach('.waves-image');
+        Waves.init();
+      });
+    </script>
+  
+  
+    <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+  
+  
+  
+
+
+  
+  
+  
+  
+    <script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+  
+
+
+
+
+
+
+    <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
