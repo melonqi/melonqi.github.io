@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>makefile | Melonqi Blog</title>
+  
+  
+
+  <link rel="alternate" href="/atom.xml" title="Melonqi Blog">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+  <!-- link -->
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
+
+  
+
+  
+  <link rel="stylesheet" href="/style.css">
+  
+
+  
+
+
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+</head>
+
+<body>
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar" class="pure"></div>
+</div>
+
+    <script>setLoadingBarProgress(20)</script>
+    <header class="l_header pure">
+	<div class="wrapper">
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href="/">
+        
+          Melonqi Blog
+        
+      </a>
+			<div class="menu">
+				<ul class="h-list">
+          
+  					
+  						<li>
+								<a id="https:melonqi.github.io" class="nav flat-box" href="https://melonqi.github.io">
+									<i class="fas fa-home fa-fw"></i>&nbsp;主页
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="home" class="nav flat-box" href="/">
+									<i class="fas fa-rss fa-fw"></i>&nbsp;博客
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="archives" class="nav flat-box" href="/archives/">
+									<i class="fas fa-archive fa-fw"></i>&nbsp;归档
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="搜索">
+						<span class="icon"><i class="fas fa-search fa-fw"></i></span>
+					</form>
+				</div>
+			
+			<ul class="switcher h-list">
+				
+					<li class="s-search"><a class="fas fa-search fa-fw" href="javascript:void(0)"></a></li>
+				
+				<li class="s-menu"><a class="fas fa-bars fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+
+		<div class="nav-sub container container--flex">
+			<a class="logo flat-box"></a>
+			<ul class="switcher h-list">
+				<li class="s-comment"><a class="flat-btn fas fa-comments fa-fw" href="javascript:void(0)"></a></li>
+				<li class="s-toc"><a class="flat-btn fas fa-list fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu">
+      <ul>
+          
+              
+                  <li>
+										<a id="https:melonqi.github.io" class="nav flat-box" href="https://melonqi.github.io">
+											<i class="fas fa-home fa-fw"></i>&nbsp;主页
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="home" class="nav flat-box" href="/">
+											<i class="fas fa-rss fa-fw"></i>&nbsp;博客
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="archives" class="nav flat-box" href="/archives/">
+											<i class="fas fa-archive fa-fw"></i>&nbsp;归档
+										</a>
+                  </li>
+              
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+
+    <script>setLoadingBarProgress(40);</script>
+    <div class="l_body">
+    <div class='container clearfix'>
+        <div class='l_main'>
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
+<section class="meta">
+  
+  <div class="meta" id="header-meta">
+    
+      
+          <h1 class="title">makefile</h1>
+      
+    
+
+    
+      <time class="metatag time">
+        <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;2019-02-14
+      </time>
+    
+
+    
+      
+
+    
+
+    
+      
+        <div class="metatag browse busuanzi"><i class="fas fa-eye fa-fw" aria-hidden="true"></i>
+          &nbsp;<span id="busuanzi_value_page_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+        </div>
+      
+    
+
+    
+
+  </div>
+</section>
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <h2 id="Makefile是什么"><a href="#Makefile是什么" class="headerlink" title="Makefile是什么"></a>Makefile是什么</h2><h3 id="关于程序的编译和链接"><a href="#关于程序的编译和链接" class="headerlink" title="关于程序的编译和链接"></a>关于程序的编译和链接</h3><p>　　一般来说，无论是C还是C++，首先要把源文件编译成中间代码文件，在Windows下也就是 .obj 文件，UNIX下是 .o 文件，即 Object File，这个动作叫做编译（compile），一般来说，每个源文件都应该对应于一个中间目标文件（O文件或是OBJ文件）。然后再把大量的Object File合成执行文件，这个动作叫作链接（link）。</p>
+<p>　　编译时，编译器需要的是语法的正确，函数与变量的声明的正确。对于后者，通常是你需要告诉编译器头文件的所在位置（头文件中应该只是声明，而定义应该放在C/C++文件中），只要所有的语法正确，编译器就可以编译出中间目标文件。<br><a id="more"></a><br>　　链接时，主要是链接函数和全局变量，所以，我们可以使用这些中间目标文件（O文件或是OBJ文件）来 链接我们的应用程序。链接器并不管函数所在的源文件，只管函数的中间目标文件（Object File），在大多数时候，由于源文件太多，编译生成的中间目标文件太多，而在链接时需要明显地指出中间目标文件名，这对于编译很不方便，所以，我们要给中间目标文件打个包，在Windows下这种包叫“库文件”（Library File)，也就是 .lib 文件，在UNIX下，是Archive File，也就是 .a 文件。</p>
+<blockquote>
+<p>一个工程中的源文件不计其数，其按类型、功能、模块分别放在若干个目录中，makefile定义了一系列的规则来指定，哪些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译，甚至于进行更复杂的功能操作，因为 makefile就像一个Shell脚本一样，其中也可以执行操作系统的命令。</p>
+</blockquote>
+<p>简单的说，Makefile是告诉用户程序该怎么编译，用户可以简单使用<code>make</code>命令就能编译一个软件，极大地提升了编程效率。 </p>
+<blockquote>
+<p><code>make</code>命令默认使用名称为Makefile或makefile的文件作为编译规则，若想指定makefile文件，使用<code>make -f file</code></p>
+</blockquote>
+<h2 id="Makefile规则"><a href="#Makefile规则" class="headerlink" title="Makefile规则"></a>Makefile规则</h2><p>Makefile简单的规则为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">目标 : 需要的条件  (注意冒号两边有空格)</span><br><span class="line">	命令 (注意前面用tab键开头)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>目标可以是一个或多个，可以是Object File，也可以是执行文件，甚至可以是一个标签。</li>
+<li>需要的条件就是生成目标所需要的文件或目标</li>
+<li>命令就是生成目标所需要执行的脚本</li>
+</ol>
+<p>　　总结一下，就是说一条makefile规则规定了编译的依赖关系，也就是目标文件依赖于条件，生成规则用命令来描述。在编译时，如果需要的条件的文件比目标更新的话，就会执行生成命令来更新目标。</p>
+<h2 id="万能Makefile模板"><a href="#万能Makefile模板" class="headerlink" title="万能Makefile模板"></a>万能Makefile模板</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">#指定编译器</span><br><span class="line">CC = g++</span><br><span class="line"></span><br><span class="line">#定义rm命令</span><br><span class="line">RM = /bin/rm</span><br><span class="line"></span><br><span class="line">#定义echo命令，用于打印信息</span><br><span class="line">ECHO = /bin/echo</span><br><span class="line"></span><br><span class="line">#编译选项，定义了HAVE_DEBUG变量，用于调试</span><br><span class="line">DEFINES = -DHAVE_DEBUG  </span><br><span class="line"></span><br><span class="line">#编译选项，</span><br><span class="line">#-g是生成debug版本，-O2代码优化，</span><br><span class="line">#-Wall提示所用waring，可根据实际需要来选择</span><br><span class="line">CPPFLAGS = -g -O2 -Wall</span><br><span class="line"></span><br><span class="line">#把include 加入到搜索头文件的路径列表中</span><br><span class="line">INCLUDES = -Iinclude </span><br><span class="line"></span><br><span class="line">#-lcrypto进行链接时搜索名为crypto的库，</span><br><span class="line">#-lssl 进行链接时搜索名为ssl的库</span><br><span class="line">#-Llib 把lib加入到搜索库文件的路径列表中</span><br><span class="line">LDFLAGS = -lcrypto -lssl</span><br><span class="line"></span><br><span class="line">#定义生成可执行文件名</span><br><span class="line">MAIN_EXE = hello</span><br><span class="line"></span><br><span class="line">#定义变量，定义all操作的条件，可包含多个要生成的可执行文件</span><br><span class="line">#例如EXECUTABLES = main1 main2，这样执行all操作就会分别生成main1 和 main2</span><br><span class="line">EXECUTABLES = $(MAIN_EXE)</span><br><span class="line"></span><br><span class="line">#指定源文件，</span><br><span class="line">#wildcard是通配符，搜索./src目录下所有以.cpp结尾的文件，</span><br><span class="line">#生成一个以空格间隔的文件名列表，并赋值给SOURCES. </span><br><span class="line">#当前目录文件只有文件名, 子目录下的文件名包含路径信息，比如./src/bar.cpp。</span><br><span class="line">SOURCES = $(wildcard src/*.cpp)</span><br><span class="line"></span><br><span class="line">#指定要生成的*.o文件，</span><br><span class="line">#patsubst是pattern substitute的缩写，匹配替代的意思。</span><br><span class="line">#这句是在SOURCES中找到所有.cpp 结尾的文件，然后把所有的.cpp换成.o。</span><br><span class="line">OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))</span><br><span class="line"></span><br><span class="line">#PHONY 目标并非实际的文件名：只是在显式请求时执行命令的名字。</span><br><span class="line">#有两种理由需要使用PHONY 目标：避免和同名文件冲突，改善性能。</span><br><span class="line">#如果编写一个规则，并不产生目标文件，则其命令在每次make 该目标时都执行。</span><br><span class="line">.PHONY: all clean</span><br><span class="line"></span><br><span class="line">#目标为all需要条件，$(EXECUTABLES)</span><br><span class="line">#由于.PHONY中有all,可解决执行文件生成的依赖关系</span><br><span class="line">all: $(EXECUTABLES) </span><br><span class="line"></span><br><span class="line">#生成$(MAIN_EXE)，需要条件$(OBJECTS)</span><br><span class="line">#使用$(CC)来生成$(MAIN_EXE)，具体g++用法请自行查阅</span><br><span class="line">#$@表示目标</span><br><span class="line">#$^所有依赖目标的集合，以空格分隔。</span><br><span class="line">#如果在依赖目标中有多个重复的，那个这个变量会去除重复的依赖目标，只保留一份。</span><br><span class="line">#该命令在本makefile中被扩展为，假设$(OBJECTS) = src/bar.o</span><br><span class="line">#hello: src/bar.o</span><br><span class="line">#	g++ -o hello bar.o  -lcrypto -lssl</span><br><span class="line">$(MAIN_EXE): $(OBJECTS)</span><br><span class="line">	$(CC) -o $@ $^ $(LDFLAGS)</span><br><span class="line"></span><br><span class="line">#生成$(MAIN_EXE)，需要先生成$(OBJECTS)</span><br><span class="line">#目标是生成src/%.o, 需要src/%.cpp，其中%为通配符</span><br><span class="line">#$&lt; 表示依赖目标中第一个目标的名字。</span><br><span class="line">#如果依赖目标是以模式(%)定义的，那么&quot;$&lt;&quot;将是符合模式的一系列文件集。（注：是一个一个取出来的）</span><br><span class="line">#命令被扩展为</span><br><span class="line">#src/bar.o: src/bar.cpp</span><br><span class="line">#	g++ -o src/bar.o -c src/bar.cpp -DHAVE_DEBUG -g -O2 -Wall -Iinclude </span><br><span class="line">src/%.o: src/%.cpp</span><br><span class="line">	$(CC) -o $@ -c $&lt; $(DEFINES) $(CPPFLAGS) $(INCLUDES)</span><br><span class="line"></span><br><span class="line">#执行clean操作</span><br><span class="line">clean:</span><br><span class="line">	- $(RM) -rf $(OBJECTS) $(MAIN_EXE)</span><br></pre></td></tr></table></figure>
+<p>.PHONY的用法详细可参考<a href="http://blog.chinaunix.net/uid-28458801-id-3452277.html" target="_blank" rel="noopener">.PHONY的用法</a></p>
+<p>\$@等都是Makefile中的特殊变量，更多特殊变量请参考：<a href="http://blog.csdn.net/u012474286/article/details/20715331" target="_blank" rel="noopener">makefile中的特殊变量</a></p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>新建一个项目，要实现的功能是对字符串”1234“计算MD5值。</p>
+<p>include/common.h</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#ifndef _COMMON_H</span><br><span class="line">#define _COMMON_H</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"></span><br><span class="line">std::string get_string_MD5(const std::string str); </span><br><span class="line"></span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>src/common.cpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;common.h&quot;</span><br><span class="line">#include &lt;openssl/md5.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">std::string get_string_MD5(const std::string str)</span><br><span class="line">&#123;</span><br><span class="line">	MD5_CTX ctx;</span><br><span class="line">	char *data = (char *)str.c_str();</span><br><span class="line">	unsigned char md[16]=&#123;0&#125;;</span><br><span class="line">	char buf[33]=&#123;0&#125;;</span><br><span class="line">	char tmp[3]=&#123;0&#125;;</span><br><span class="line">	int i;</span><br><span class="line">	</span><br><span class="line">	MD5_Init(&amp;ctx);</span><br><span class="line">	MD5_Update(&amp;ctx,data,strlen(data));</span><br><span class="line">	MD5_Final(md,&amp;ctx);</span><br><span class="line"></span><br><span class="line">	for(i=0;i&lt;16;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		sprintf(tmp,&quot;%X&quot;,md[i]);</span><br><span class="line">		strcat(buf,tmp);</span><br><span class="line">	&#125;</span><br><span class="line">	return std::string(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>src/main.cpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &quot;common.h&quot;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	string str = &quot;1234&quot;;</span><br><span class="line">	string after = get_string_MD5(str);</span><br><span class="line">	cout&lt;&lt;&quot;Before MD5: &quot;&lt;&lt;str&lt;&lt;endl;</span><br><span class="line">	cout&lt;&lt;&quot;After MD5: &quot;&lt;&lt;after&lt;&lt;endl;</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例需要安装openssl库；在目录下运行<code>make</code>，然后运行<code>./hello</code></p>
+<p>整个示例的下载地址：<a href="md5.zip">md5.zip</a></p>
+
+      </div>
+        
+          <section class="meta" id="footer-meta">
+            
+              <time class="metatag time" itemprop="dateUpdated" datetime="2019-02-14T21:47:53+08:00" content="2019-02-14"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+                &nbsp;2019-02-14
+              </time>
+            
+            
+                
+                <div class="metatag tags"><a class="tag" href="/tags/C-C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;C/C++</a></div> <div class="metatag tags"><a class="tag" href="/tags/makefile/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;makefile</a></div>
+            
+            
+          </section>
+        
+
+        
+            <div class="prev-next">
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一页&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/2019/02/08/TopK/" rel="prev" title="TopK和堆排序">
+                                    
+                                        TopK和堆排序
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/算法/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>算法</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+
+    </section>
+
+</article>
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+
+      
+        
+
+    <div class="recommended_posts">
+        <h4><i class="fas fa-bookmark fa-fw" aria-hidden="true"></i>&nbsp;相关文章</h4>
+        <ul>
+            
+                <li><a href="http://melonqi.github.io/2019/02/08/TopK/">TopK和堆排序</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/30/float/">float有效位丢失</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/27/geojson/">geojson</a></li>
+            
+                <li><a href="http://melonqi.github.io/2019/01/24/textencode/">文本编码那些事</a></li>
+            
+        </ul>
+    </div>
+
+
+      
+
+      
+    </section>
+  </article>
+
+
+
+<script>
+    window.subData = {
+        title: 'makefile',
+        tools: true
+    }
+</script>
+
+
+        </div>
+        <aside class='l_side'>
+            
+  
+  
+    
+      
+      
+        <section class="author">
+  <div class="content pure">
+    
+      <div class="avatar">
+        <img class="avatar" src="http://hbimg.b0.upaiyun.com/bd522da06a3fcdf07f00745b37eb64c202f9da5d16ee4-9rfq5f_fw658">
+      </div>
+    
+    
+    
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        <section class="plain">
+  
+<header class="pure">
+  <div><i class="fas fa-bullhorn fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;注意啦～</div>
+  
+    <a class="rightBtn" target="_blank" rel="external nofollow noopener noreferrer" href="https://xaoxuu.com/wiki/material-x/" title="https://xaoxuu.com/wiki/material-x/">
+    <i class="fas fa-question-circle fa-fw"></i></a>
+  
+</header>
+
+  <div class="content pure">
+    <p>本站使用 <a href="https://xaoxuu.com/wiki/material-x/">Material X</a> 作为主题，喜欢这个主题的朋友可以阅读文档进行安装哦，超喜欢的话还可以安利给身边的朋友哦～</p>
+
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="tagcloud">
+    
+<header class="pure">
+  <div><i class="fas fa-fire fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;热门标签</div>
+  
+</header>
+
+    <div class="content pure">
+      <a href="/tags/C-C/" style="font-size: 24px; color: #555">C/C++</a> <a href="/tags/Gis/" style="font-size: 14px; color: #999">Gis</a> <a href="/tags/makefile/" style="font-size: 14px; color: #999">makefile</a> <a href="/tags/python/" style="font-size: 14px; color: #999">python</a> <a href="/tags/算法/" style="font-size: 14px; color: #999">算法</a> <a href="/tags/编码/" style="font-size: 14px; color: #999">编码</a>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目录</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Makefile是什么"><span class="toc-text">Makefile是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于程序的编译和链接"><span class="toc-text">关于程序的编译和链接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Makefile规则"><span class="toc-text">Makefile规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#万能Makefile模板"><span class="toc-text">万能Makefile模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li></ol>
+    </div>
+  </section>
+
+
+      
+    
+  
+
+
+        </aside>
+        <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+    <footer id="footer" class="clearfix">
+  
+  <br>
+  <div><p>博客内容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+  <div>本站使用 <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a> 作为主题，总访问量为 <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span> 次。
+  </div>
+</footer>
+
+    <script>setLoadingBarProgress(80);</script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        const $reveal = $('.reveal');
+    		if ($reveal.length === 0) return;
+    		const sr = ScrollReveal({ distance: 0 });
+    		sr.reveal('.reveal');
+      });
+    </script>
+  
+  
+    <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        Waves.attach('.flat-btn', ['waves-button']);
+        Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+        Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+        Waves.attach('.flat-box', ['waves-block']);
+        Waves.attach('.float-box', ['waves-block', 'waves-float']);
+        Waves.attach('.waves-image');
+        Waves.init();
+      });
+    </script>
+  
+  
+    <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+  
+  
+  
+
+
+  
+  
+  
+  
+    <script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+  
+
+
+
+
+
+
+    <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
